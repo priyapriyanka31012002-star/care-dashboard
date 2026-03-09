@@ -1101,8 +1101,16 @@ function App(){
     return()=>{clearInterval(interval);window.removeEventListener('beforeunload',onUnload)};
   },[authUser]);
 
+  // Default admin credentials (works without Supabase)
+  const DEFAULT_ADMIN={email:'admin@care.com',password:'admin123',name:'Admin'};
+
   const handleLogin=async(email,password)=>{
     setAuthError('');
+    // Default admin bypass
+    if(email===DEFAULT_ADMIN.email&&password===DEFAULT_ADMIN.password){
+      setAuthUser({id:'local-admin',email:DEFAULT_ADMIN.email,user_metadata:{name:DEFAULT_ADMIN.name}});
+      return true;
+    }
     try{
       const{data,error}=await sb.auth.signInWithPassword({email,password});
       if(error){setAuthError(error.message);return false}
@@ -1114,6 +1122,8 @@ function App(){
 
   const handleRegister=async(email,password,displayName)=>{
     setAuthError('');
+    // Block registering with default admin email
+    if(email===DEFAULT_ADMIN.email){setAuthError('This email is reserved. Use Sign In instead.');return false}
     try{
       const{data,error}=await sb.auth.signUp({email,password,options:{data:{name:displayName}}});
       if(error){setAuthError(error.message);return false}
