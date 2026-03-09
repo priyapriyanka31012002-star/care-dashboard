@@ -1,0 +1,3 @@
+// Entry point for frontend JS
+// Import app and mount to DOM
+// ...add your SPA or initialization code here...
